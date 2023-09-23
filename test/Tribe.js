@@ -112,7 +112,7 @@ describe("Tribe", function () {
       await tribe.connect(owner).accept(otherAccount.address);
 
       expect(await tribe.isMember(otherAccount.address)).to.equal(true);
-      await expect(tribe.connect(owner).accept(otherAccount.address)).to.be.revertedWith('Max Mint per wallet reached');
+      await expect(tribe.connect(owner).accept(otherAccount.address)).to.be.revertedWith('Value already set');
     });
 
     it("Exits tribe - from owner", async function () {

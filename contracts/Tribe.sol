@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.19;
 
-// Uncomment this line to use console.log
-// import "hardhat/console.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
@@ -45,11 +43,13 @@ contract Tribe is ERC721, Ownable {
     }   
 
     function _memberValue(address member, bool value) private {
+        require(value != memberAccepted[member], "Value already set");
         memberAccepted[member] = value;
         emit TribeMemberValue(member, value); // Emitting event
     }
 
     function _ownerValue(address member, bool value) private {
+        require(value != ownerAccepted[member], "Value already set");
         ownerAccepted[member] = value;
         emit TribeOwnerValue(member, value); // Emitting event
     }
@@ -59,7 +59,6 @@ contract Tribe is ERC721, Ownable {
     }
 
     function _join(address member) private {
-        require(balanceOf(member) == 0, "Max Mint per wallet reached");
         uint256 nftId = tokenCounter;
         tokenIdAddress[member] = tokenCounter;
         tokenCounter = tokenCounter + 1;
