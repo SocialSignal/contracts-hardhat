@@ -21,6 +21,7 @@ contract Tribe is ERC721, Ownable {
     constructor(string memory name, string  memory symbol) ERC721(name, symbol) {
 
         // TODO add more metadata to the contract
+        // TODO add events
     }
 
     function _memberValue(address member, bool value) private {
@@ -56,7 +57,7 @@ contract Tribe is ERC721, Ownable {
     function join(address member) onlyOwnerOrSender(member) public {
         accept(member);
         require(_isMintable(member), "You are not allowed to mint this token");
-        require(balanceOf(msg.sender) == 0, "Max Mint per wallet reached");
+        require(balanceOf(member) == 0, "Max Mint per wallet reached");
         uint256 nftId = tokenCounter;
         tokenIdAddress[member] = tokenCounter;
         tokenCounter = tokenCounter + 1;

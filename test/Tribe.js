@@ -86,5 +86,47 @@ describe("Tribe", function () {
       expect(await tribe.ownerAccepted(otherAccount.address)).to.equal(false);
       expect(await tribe.memberAccepted(otherAccount.address)).to.equal(false);
     });
+
+    it("Join tribe - from member", async function () {
+      const { tribe, otherAccount } = await loadFixture(deploy);
+
+      await tribe.accept(otherAccount.address);
+      expect(await tribe.ownerAccepted(otherAccount.address)).to.equal(true);
+      expect(await tribe.memberAccepted(otherAccount.address)).to.equal(false);
+
+      await tribe.connect(otherAccount).join(otherAccount.address);
+      expect(await tribe.isMember(otherAccount.address)).to.equal(true);
+    });
+
+    it("Reverts Join tribe - only member approve", async function () {
+      const { tribe, otherAccount } = await loadFixture(deploy);
+
+      await tribe.accept(otherAccount.address);
+      expect(await tribe.ownerAccepted(otherAccount.address)).to.equal(true);
+      expect(await tribe.memberAccepted(otherAccount.address)).to.equal(false);
+
+      await expect(tribe.join(otherAccount.address)).to.be.revertedWith('You are not allowed to mint this token');
+    });
+
+    it("Join tribe - from owner", async function () {
+      const { tribe, owner, otherAccount } = await loadFixture(deploy);
+
+      await tribe.connect(otherAccount).accept(otherAccount.address);
+      expect(await tribe.ownerAccepted(otherAccount.address)).to.equal(true);
+      expect(await tribe.memberAccepted(otherAccount.address)).to.equal(false);
+
+      await tribe.connect(owner).join(otherAccount.address);
+      expect(await tribe.isMember(otherAccount.address)).to.equal(true);
+    });
+
+    it("Reverts Join tribe - only owner approve", async function () {
+      const { tribe, otherAccount } = await loadFixture(deploy);
+
+      await tribe.accept(otherAccount.address);
+      expect(await tribe.ownerAccepted(otherAccount.address)).to.equal(true);
+      expect(await tribe.memberAccepted(otherAccount.address)).to.equal(false);
+
+      await expect(tribe.join(otherAccount.address)).to.be.revertedWith('You are not allowed to mint this token');
+    });
   });
 });
