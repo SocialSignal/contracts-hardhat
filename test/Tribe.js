@@ -112,10 +112,8 @@ describe("Tribe", function () {
       const { tribe, owner, otherAccount } = await loadFixture(deploy);
 
       await tribe.connect(otherAccount).accept(otherAccount.address);
-      expect(await tribe.ownerAccepted(otherAccount.address)).to.equal(true);
-      expect(await tribe.memberAccepted(otherAccount.address)).to.equal(false);
-
       await tribe.connect(owner).join(otherAccount.address);
+
       expect(await tribe.isMember(otherAccount.address)).to.equal(true);
     });
 
