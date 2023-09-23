@@ -14,6 +14,10 @@ contract Tribe is ERC721, Ownable {
     string private _nftImageURI;  /// The base URI for all minted NFTs
     string public ensName;  /// The ENS name associated with the contract
 
+    /// @notice Event emitted when a tribe is founded
+    /// @param tribe The address of the tribe
+    event TribeFounded(address indexed tribe);
+
     /// @notice Event emitted when a member's acceptance status changes
     /// @param member The address of the member
     /// @param value The new acceptance status
@@ -52,6 +56,7 @@ contract Tribe is ERC721, Ownable {
         _nftImageURI = nftImageURI;
         require(bytes(ensName_).length > 0, "ENS name cannot be empty");
         ensName = ensName_;
+        emit TribeFounded(address(this));
     }
 
     /// @dev Overrides the `_transfer` function of the ERC721 standard
