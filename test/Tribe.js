@@ -138,5 +138,17 @@ describe("Tribe", function () {
       await tribe.setBaseURI("https://example2.com/");
       expect(await tribe.tokenURI(1)).to.equal("https://example2.com/1");
     });
+
+    it("Transfer should not work", async function () {
+      const { tribe, owner, otherAccount } = await loadFixture(deploy);
+
+      await tribe.connect(otherAccount).accept(otherAccount.address);
+      await tribe.connect(owner).accept(otherAccount.address);
+
+      await tribe.connect(otherAccount).approve(owner.address, 1);
+      await tribe.connect(otherAccount).transferFrom(otherAccount.address, owner.address, 1);
+
+      expect(await tribe.balanceOf(otherAccount)).to.equal(1);
+    });
   });
 });
