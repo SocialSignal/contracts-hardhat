@@ -33,6 +33,10 @@ contract Tribe is ERC721, Ownable {
     /// @param tokenId The token ID that was minted
     event TribeJoined(address indexed member, uint256 tokenId);
 
+    // @notice Event emitted for opensea to hide transfer button
+    /// @param tokenId The token ID that was locked
+    event Locked(uint256 tokenId);
+
     /// @notice Event emitted when a member exits the tribe
     /// @param member The address of the member
     /// @param tokenId The token ID that was burned
@@ -99,6 +103,7 @@ contract Tribe is ERC721, Ownable {
         tokenCounter = tokenCounter + 1;
         _safeMint(member, nftId);
         emit TribeJoined(member, nftId); 
+        emit Locked(nftId);
     }
 
     /// @dev Internal function to exit a member from the tribe
