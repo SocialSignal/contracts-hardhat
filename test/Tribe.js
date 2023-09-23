@@ -14,7 +14,7 @@ describe("Tribe", function () {
     const [owner, otherAccount] = await ethers.getSigners();
 
     const Tribe = await ethers.getContractFactory("Tribe");
-    const tribe = await Tribe.deploy("Name", "Symbol");
+    const tribe = await Tribe.deploy("Name", "Symbol", owner.address, "https://example.com/");
 
     return { tribe, owner, otherAccount };
   }
@@ -113,6 +113,30 @@ describe("Tribe", function () {
 
       expect(await tribe.isMember(otherAccount.address)).to.equal(true);
       await expect(tribe.connect(owner).accept(otherAccount.address)).to.be.revertedWith('Max Mint per wallet reached');
+    });
+
+    it("Exits tribe - from owner", async function () {
+      const { tribe, owner, otherAccount } = await loadFixture(deploy);
+
+      await tribe.connect(otherAccount).accept(otherAccount.address);
+      await tribe.connect(owner).accept(otherAccount.address);
+
+      expect(await tribe.isMember(otherAccount.address)).to.equal(true);
+
+      await tribe.connect(owner).revoke(otherAccount.address);
+      expect(await tribe.isMember(otherAccount.address)).to.equal(false);
+    });
+
+    it("Reads NFT metadata", async function () {
+      const { tribe, owner, otherAccount } = await loadFixture(deploy);
+
+      await tribe.connect(otherAccount).accept(otherAccount.address);
+      await tribe.connect(owner).accept(otherAccount.address);
+
+      expect(await tribe.tokenURI(0)).to.equal("https://example.com/0");
+      
+      await tribe.setBaseURI("https://example2.com/");
+      expect(await tribe.tokenURI(0)).to.equal("https://example2.com/0");
     });
   });
 });

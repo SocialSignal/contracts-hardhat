@@ -11,6 +11,8 @@ contract Tribe is ERC721, Ownable {
     mapping(address => bool) public ownerAccepted;
     mapping(address => uint256) public tokenIdAddress;
     uint256 public tokenCounter;
+    string private _nftImageURI;
+
 
     // Events
     event TribeMemberAccepted(address indexed member);
@@ -23,9 +25,9 @@ contract Tribe is ERC721, Ownable {
         _;
     }
 
-    constructor(string memory name, string memory symbol) ERC721(name, symbol) {
-        // TODO add more metadata to the contract
-        // Events are defined but not emitted here
+    constructor(string memory name, string memory symbol, address owner, string memory nftImageURI) ERC721(name, symbol) {
+        transferOwnership(owner);
+        _nftImageURI = nftImageURI;
     }
 
     function _memberValue(address member, bool value) private {
@@ -84,4 +86,12 @@ contract Tribe is ERC721, Ownable {
     function isMember(address member) public view returns (bool) {
         return balanceOf(member) > 0;
     }
+
+    function setBaseURI(string memory nftImageURI) external onlyOwner {
+        _nftImageURI = nftImageURI;
+    }
+   
+    function _baseURI() internal view override returns (string memory) {
+        return _nftImageURI;
+    }    
 }
