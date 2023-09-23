@@ -36,12 +36,30 @@ contract Tribe is ERC721, Ownable {
         return memberAccepted[member] && ownerAccepted[member];
     }
 
+    function _join(address member) private {
+        require(_isMintable(member), "You are not allowed to mint this token");
+        require(balanceOf(member) == 0, "Max Mint per wallet reached");
+        uint256 nftId = tokenCounter;
+        tokenIdAddress[member] = tokenCounter;
+        tokenCounter = tokenCounter + 1;
+        _safeMint(member, nftId);
+    }
+
+    function _exit(address member) public {
+        uint256 tokenId = tokenIdAddress[member];
+        revoke(member);
+        _burn(tokenId);
+    }
+
     function accept(address member) onlyOwnerOrSender(member) public {
         if (msg.sender == member) {
             _memberValue(member, true);
         }
         if (msg.sender == owner()) {
             _ownerValue(member, true);
+        }
+        if (_isMintable(member)) {
+            _join(member);
         }
     }
 
@@ -52,22 +70,9 @@ contract Tribe is ERC721, Ownable {
         if (msg.sender == owner()) {
             _ownerValue(member, false);
         }
-    }
-
-    function join(address member) onlyOwnerOrSender(member) public {
-        accept(member);
-        require(_isMintable(member), "You are not allowed to mint this token");
-        require(balanceOf(member) == 0, "Max Mint per wallet reached");
-        uint256 nftId = tokenCounter;
-        tokenIdAddress[member] = tokenCounter;
-        tokenCounter = tokenCounter + 1;
-        _safeMint(member, nftId);
-    }
-
-    function exit(address member) onlyOwnerOrSender(member) public {
-        uint256 tokenId = tokenIdAddress[member];
-        revoke(member);
-        _burn(tokenId);
+        if (isMember(member)) {
+            _exit(member);
+        }
     }
     
     function isMember(address member) public view returns (bool) {
