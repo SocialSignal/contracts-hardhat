@@ -56,5 +56,35 @@ describe("Tribe", function () {
       await tribe.connect(owner).accept(otherAccount.address);
       expect(await tribe.ownerAccepted(otherAccount.address)).to.equal(true);
     });
+
+    it("Revert if not owner or member", async function () {
+      const { tribe, owner, otherAccount } = await loadFixture(deploy);
+
+      await expect(tribe.connect(otherAccount).accept(owner.address)).to.be.revertedWith('msg.sender needs to be equal to member or owner');
+    });
+
+    it("Accept and revoke member by member", async function () {
+      const { tribe, otherAccount } = await loadFixture(deploy);
+
+      await tribe.connect(otherAccount).accept(otherAccount.address);
+      expect(await tribe.ownerAccepted(otherAccount.address)).to.equal(false);
+      expect(await tribe.memberAccepted(otherAccount.address)).to.equal(true);
+
+      await tribe.connect(otherAccount).revoke(otherAccount.address);
+      expect(await tribe.ownerAccepted(otherAccount.address)).to.equal(false);
+      expect(await tribe.memberAccepted(otherAccount.address)).to.equal(false);
+    });
+
+    it("Accept and revoke member by owner", async function () {
+      const { tribe, otherAccount } = await loadFixture(deploy);
+
+      await tribe.accept(otherAccount.address);
+      expect(await tribe.ownerAccepted(otherAccount.address)).to.equal(true);
+      expect(await tribe.memberAccepted(otherAccount.address)).to.equal(false);
+
+      await tribe.revoke(otherAccount.address);
+      expect(await tribe.ownerAccepted(otherAccount.address)).to.equal(false);
+      expect(await tribe.memberAccepted(otherAccount.address)).to.equal(false);
+    });
   });
 });
