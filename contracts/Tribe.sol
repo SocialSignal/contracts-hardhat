@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
@@ -13,10 +13,6 @@ contract Tribe is ERC721, Ownable {
     uint256 public tokenCounter = 1;  /// Keeps track of the last minted token ID. Set to 1 to enable token Id = 0, which means not minted.
     string private _nftImageURI;  /// The base URI for all minted NFTs
     string public ensName;  /// The ENS name associated with the contract
-
-    /// @notice Event emitted when a tribe is founded
-    /// @param tribe The address of the tribe
-    event TribeFounded(address indexed tribe);
 
     /// @notice Event emitted when a member's acceptance status changes
     /// @param member The address of the member
@@ -60,7 +56,6 @@ contract Tribe is ERC721, Ownable {
         _nftImageURI = nftImageURI;
         require(bytes(ensName_).length > 0, "ENS name cannot be empty");
         ensName = ensName_;
-        emit TribeFounded(address(this));
     }
 
     /// @dev Overrides the `_transfer` function of the ERC721 standard
