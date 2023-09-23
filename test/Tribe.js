@@ -5,7 +5,7 @@ const {
 const { anyValue } = require("@nomicfoundation/hardhat-chai-matchers/withArgs");
 const { expect } = require("chai");
 
-describe("Lock", function () {
+describe("Tribe", function () {
   // We define a fixture to reuse the same setup in every test.
   // We use loadFixture to run this setup once, snapshot that state,
   // and reset Hardhat Network to that snapshot in every test.
@@ -22,7 +22,7 @@ describe("Lock", function () {
   describe("Deployment", function () {
     it("Should set the correct owner", async function () {
       const { tribe, owner } = await loadFixture(deploy);
-      
+
       expect(await tribe.owner()).to.equal(owner.address);
     });
 
@@ -33,6 +33,28 @@ describe("Lock", function () {
 
       expect(await tribe.ownerAccepted(owner.address)).to.equal(true);
       expect(await tribe.memberAccepted(owner.address)).to.equal(true);
+    });
+
+    it("Accept member (owner -> member)", async function () {
+      const { tribe, otherAccount } = await loadFixture(deploy);
+
+      await tribe.accept(otherAccount.address);
+      expect(await tribe.ownerAccepted(otherAccount.address)).to.equal(true);
+      expect(await tribe.memberAccepted(otherAccount.address)).to.equal(false);
+
+      await tribe.connect(otherAccount).accept(otherAccount.address);
+      expect(await tribe.memberAccepted(otherAccount.address)).to.equal(true);
+    });
+
+    it("Accept member (member -> owner)", async function () {
+      const { tribe, owner, otherAccount } = await loadFixture(deploy);
+
+      await tribe.connect(otherAccount).accept(otherAccount.address);
+      expect(await tribe.ownerAccepted(otherAccount.address)).to.equal(false);
+      expect(await tribe.memberAccepted(otherAccount.address)).to.equal(true);
+
+      await tribe.connect(owner).accept(otherAccount.address);
+      expect(await tribe.ownerAccepted(otherAccount.address)).to.equal(true);
     });
   });
 });
