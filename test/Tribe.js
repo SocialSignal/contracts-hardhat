@@ -14,7 +14,7 @@ describe("Tribe", function () {
     const [owner, otherAccount] = await ethers.getSigners();
 
     const Tribe = await ethers.getContractFactory("Tribe");
-    const tribe = await Tribe.deploy("Name", "Symbol", owner.address, "https://example.com/");
+    const tribe = await Tribe.deploy("Name", "Symbol", owner.address, "https://example.com/", "socialsignal");
 
     return { tribe, owner, otherAccount };
   }
@@ -133,10 +133,10 @@ describe("Tribe", function () {
       await tribe.connect(otherAccount).accept(otherAccount.address);
       await tribe.connect(owner).accept(otherAccount.address);
 
-      expect(await tribe.tokenURI(0)).to.equal("https://example.com/0");
+      expect(await tribe.tokenURI(1)).to.equal("https://example.com/1");
       
       await tribe.setBaseURI("https://example2.com/");
-      expect(await tribe.tokenURI(0)).to.equal("https://example2.com/0");
+      expect(await tribe.tokenURI(1)).to.equal("https://example2.com/1");
     });
   });
 });
