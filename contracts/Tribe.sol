@@ -43,7 +43,6 @@ contract Tribe is ERC721, Ownable {
     }
 
     function _join(address member) private {
-        require(_isMintable(member), "You are not allowed to mint this token");
         require(balanceOf(member) == 0, "Max Mint per wallet reached");
         uint256 nftId = tokenCounter;
         tokenIdAddress[member] = tokenCounter;
@@ -54,7 +53,6 @@ contract Tribe is ERC721, Ownable {
 
     function _exit(address member) private {
         uint256 tokenId = tokenIdAddress[member];
-        revoke(member);
         _burn(tokenId);
         emit TribeExited(member, tokenId); // Emitting event
     }

@@ -92,7 +92,7 @@ describe("Tribe", function () {
 
       await tribe.accept(otherAccount.address);
       await tribe.connect(otherAccount).accept(otherAccount.address);
-      
+
       expect(await tribe.isMember(otherAccount.address)).to.equal(true);
     });
 
@@ -103,6 +103,16 @@ describe("Tribe", function () {
       await tribe.connect(owner).accept(otherAccount.address);
 
       expect(await tribe.isMember(otherAccount.address)).to.equal(true);
+    });
+
+    it("Reverts with max mint per wallet", async function () {
+      const { tribe, owner, otherAccount } = await loadFixture(deploy);
+
+      await tribe.connect(otherAccount).accept(otherAccount.address);
+      await tribe.connect(owner).accept(otherAccount.address);
+
+      expect(await tribe.isMember(otherAccount.address)).to.equal(true);
+      await expect(tribe.connect(owner).accept(otherAccount.address)).to.be.revertedWith('Max Mint per wallet reached');
     });
   });
 });
