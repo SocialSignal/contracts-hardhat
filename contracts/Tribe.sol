@@ -16,6 +16,11 @@ contract Tribe is ERC721, Ownable {
         _;
     }
 
+    modifier onlyOwnerOrSender(address member) {
+        require(msg.sender == member || msg.sender == owner(), "msg.sender needs to be equal to member or owner");
+        _;
+    }
+
     constructor(string memory name, string  memory symbol) ERC721(name, symbol) {
     }
 
@@ -39,11 +44,8 @@ contract Tribe is ERC721, Ownable {
         if (msg.sender == member) {
             _memberAccept(member);
         }
-        else if (msg.sender == owner()) {
+        if (msg.sender == owner()) {
             _ownerAccept(member);
-        }
-        else {
-            revert("You are not allowed to accept this member");
         }
     }
 
@@ -51,11 +53,8 @@ contract Tribe is ERC721, Ownable {
         if (msg.sender == member) {
             _memberRevoke(member);
         }
-        else if (msg.sender == owner()) {
+        if (msg.sender == owner()) {
             _ownerRevoke(member);
-        }
-        else {
-            revert("You are not allowed to revoke this member");
         }
     }
 
@@ -63,14 +62,14 @@ contract Tribe is ERC721, Ownable {
         return memberAccepted[member] && ownerAccepted[member];
     }
 
-    function join(address member) public {
+    function join(address member) onlyOwnerOrSender(member) public {
         accept(member);
         require(_isMintable(member), "You are not allowed to mint this token");
         require(balanceOf(msg.sender) == 0, "Max Mint per wallet reached");
         _safeMint(member, 1);
     }
 
-    function exit(address member, uint256 tokenId) public {
+    function exit(address member, uint256 tokenId) onlyOwnerOrSender(member) public {
         revoke(member);
         _burn(tokenId);
     }
