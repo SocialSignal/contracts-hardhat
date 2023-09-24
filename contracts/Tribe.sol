@@ -3,11 +3,12 @@ pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "hardhat/console.sol";
 
 /// @title Tribe Membership Contract
 /// @dev A smart contract that mints ERC721 tokens as proof of membership within a tribe.
 contract Tribe is ERC721, Ownable {
+    enum MemberState { NonMember, Invited, Requested, Member }
+
     mapping(address => bool) public memberAccepted;  /// Tracks the acceptance status by the member
     mapping(address => bool) public ownerAccepted;   /// Tracks the acceptance status by the owner
     mapping(address => uint256) public tokenIdAddress;  /// Maps an address to its minted token ID
@@ -16,37 +17,41 @@ contract Tribe is ERC721, Ownable {
     string public ensName;  /// The ENS name associated with the contract
 
     /// @notice Event emitted when a member's acceptance status changes
-    /// @param member The address of the member
+    /// @param account The address of the member
     /// @param value The new acceptance status
-    event TribeMemberValue(address indexed member, bool value);
+    event TribeMemberValue(address indexed account, bool value);
 
     /// @notice Event emitted when an owner's acceptance status for a member changes
-    /// @param member The address of the member
+    /// @param account The address of the member
     /// @param value The new acceptance status
-    event TribeOwnerValue(address indexed member, bool value);
+    event TribeOwnerValue(address indexed account, bool value);
 
     /// @notice Event emitted when a new member joins the tribe
-    /// @param member The address of the member
+    /// @param account The address of the member
     /// @param tokenId The token ID that was minted
-    event TribeJoined(address indexed member, uint256 tokenId);
+    event TribeJoined(address indexed account, uint256 tokenId);
+
+    event TribeStatus(address indexed account, MemberState tribeStatus);
 
     // @notice Event emitted for opensea to hide transfer button
     /// @param tokenId The token ID that was locked
     event Locked(uint256 tokenId);
 
     /// @notice Event emitted when a member exits the tribe
-    /// @param member The address of the member
+    /// @param account The address of the member
     /// @param tokenId The token ID that was burned
-    event TribeExited(address indexed member, uint256 tokenId);
+    event TribeExited(address indexed account, uint256 tokenId);
 
     /// @dev Only allows the owner or the sender themselves to perform certain actions
-    modifier onlyOwnerOrSender(address member) {
-        require(msg.sender == member || msg.sender == owner(), "msg.sender needs to be equal to member or owner");
+    modifier onlyOwnerOrSender(address account) {
+        require(msg.sender == account || msg.sender == owner(), "msg.sender needs to be equal to member or owner");
         _;
     }
 
     /// @dev Initializes the contract
-    constructor() ERC721("Tribe", "TRIBE") {}
+    constructor(address owner) ERC721("Tribe", "TRIBE") {
+        transferOwnership(owner);
+    }
 
     function initialize(address owner, string memory nftImageURI, string memory ensName_) onlyOwner() public {
         transferOwnership(owner);
@@ -79,75 +84,92 @@ contract Tribe is ERC721, Ownable {
     }
 
     /// @dev Internal function to change the acceptance status of a member
-    function _memberValue(address member, bool value) private {
-        require(value != memberAccepted[member], "Value already set");
-        memberAccepted[member] = value;
-        emit TribeMemberValue(member, value); 
+    function _memberValue(address account, bool value) private {
+        require(value != memberAccepted[account], "Value already set");
+        memberAccepted[account] = value;
+        emit TribeMemberValue(account, value); 
     }
 
     /// @dev Internal function to change the owner's acceptance status for a member
-    function _ownerValue(address member, bool value) private {
-        require(value != ownerAccepted[member], "Value already set");
-        ownerAccepted[member] = value;
-        emit TribeOwnerValue(member, value); 
+    function _ownerValue(address account, bool value) private {
+        require(value != ownerAccepted[account], "Value already set");
+        ownerAccepted[account] = value;
+        emit TribeOwnerValue(account, value); 
     }
 
     /// @dev Internal function to check if a member can be minted an NFT
-    function _isMintable(address member) private view returns (bool) {
-        return memberAccepted[member] && ownerAccepted[member];
+    function _isMintable(address account) private view returns (bool) {
+        return memberAccepted[account] && ownerAccepted[account];
+    }
+
+    function getMemberState(address account) public view returns (MemberState){
+        if (isMember(account)){
+            return MemberState.Member;
+        }
+        else if (ownerAccepted[account]){
+            return MemberState.Invited;
+        }
+        else if (memberAccepted[account]){
+            return MemberState.Requested;
+        }
+        else {
+            return MemberState.NonMember;
+        }
     }
 
     /// @dev Internal function to join a member to the tribe
-    function _join(address member) private {
+    function _join(address account) private {
         uint256 nftId = tokenCounter;
-        tokenIdAddress[member] = tokenCounter;
+        tokenIdAddress[account] = tokenCounter;
         tokenCounter = tokenCounter + 1;
-        _safeMint(member, nftId);
-        emit TribeJoined(member, nftId); 
+        _safeMint(account, nftId);
+        emit TribeJoined(account, nftId); 
         emit Locked(nftId);
     }
 
     /// @dev Internal function to exit a member from the tribe
-    function _exit(address member) private {
-        uint256 tokenId = tokenIdAddress[member];
-        tokenIdAddress[member] = 0;
+    function _exit(address account) private {
+        uint256 tokenId = tokenIdAddress[account];
+        tokenIdAddress[account] = 0;
         _burn(tokenId);
-        emit TribeExited(member, tokenId); 
+        emit TribeExited(account, tokenId); 
     }
 
-    /// @notice Accept a member into the tribe
-    /// @param member The address of the potential member
-    function accept(address member) public onlyOwnerOrSender(member) {
-        if (msg.sender == member) {
-            _memberValue(member, true);
+    /// @notice Accept a account into the tribe
+    /// @param account The address of the potential member
+    function accept(address account) public onlyOwnerOrSender(account) {
+        if (msg.sender == account) {
+            _memberValue(account, true);
         }
         if (msg.sender == owner()) {
-            _ownerValue(member, true);
+            _ownerValue(account, true);
         }
-        if (_isMintable(member)) {
-            _join(member);
+        if (_isMintable(account)) {
+            _join(account);
         }
+        emit TribeStatus(account, getMemberState(account));
     }
 
-    /// @notice Revoke a membership from the tribe
-    /// @param member The address of the current member
-    function revoke(address member) public onlyOwnerOrSender(member) {
-        if (isMember(member)) {
-            _exit(member);
+    /// @notice Revoke an accept
+    /// @param account The address of the current member
+    function revoke(address account) public onlyOwnerOrSender(account) {
+        if (isMember(account)) {
+            _exit(account);
         }
-        if (msg.sender == member) {
-            _memberValue(member, false);
+        if (msg.sender == account) {
+            _memberValue(account, false);
         }
         if (msg.sender == owner()) {
-            _ownerValue(member, false);
+            _ownerValue(account, false);
         }
+        emit TribeStatus(account, getMemberState(account));
     }
 
     /// @notice Checks if an address is a member of the tribe
-    /// @param member The address to check
+    /// @param account The address to check
     /// @return true if the address is a member, false otherwise
-    function isMember(address member) public view returns (bool) {
-        return balanceOf(member) > 0;
+    function isMember(address account) public view returns (bool) {
+        return balanceOf(account) > 0;
     }
 
     /// @notice Returns the metadata for a token Id - all token IDs should be the same

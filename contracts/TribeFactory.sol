@@ -3,19 +3,15 @@ pragma solidity ^0.8.19;
 
 import "./Tribe.sol";  // Replace with your actual import if located differently
 import "@openzeppelin/contracts/proxy/Clones.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 /// @title Tribe Factory
 /// @dev Deploys new instances of the Tribe contract.
-contract TribeFactory {
+contract TribeFactory is Ownable {
     /// @notice Event emitted when a new Tribe is created
     /// @param tribeAddress The address of the Tribe contract
     event TribeFounded(address indexed tribeAddress);
-
     address public implementationAddress;
-
-    constructor(address immplementationAddress_) {
-        implementationAddress = immplementationAddress_;
-    }
 
     /// @notice Creates a new Tribe
     /// @param owner The owner of the Tribe
@@ -35,5 +31,10 @@ contract TribeFactory {
         emit TribeFounded(address(tribe));
         
         return tribeAddress;
+    }
+
+    function initialize(address implementationAddress_) public { 
+        require(implementationAddress == address(0), "contract already initialized");
+        implementationAddress = implementationAddress_;
     }
 }
