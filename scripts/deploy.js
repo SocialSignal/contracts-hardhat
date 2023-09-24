@@ -34,7 +34,6 @@ async function main() {
 
   await hre.run("verify:verify", {
     address: tribe.target,
-    constructorArguments: [tribeFactory.target],
   });
 
   await hre.run("verify:verify", {

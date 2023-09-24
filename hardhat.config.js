@@ -33,12 +33,19 @@ module.exports = {
       accounts: {
         mnemonic: process.env.MNEMONIC
       },
+    },
+    linea: {
+      url: `https://linea-goerli.infura.io/v3/${process.env.INFURA_KEY}`,
+      accounts: {
+        mnemonic: process.env.MNEMONIC
+      },  
     }
   },
   etherscan: {
     apiKey: {
       goerli: process.env.ETHERSCAN_GOERLI,
       scroll: process.env.ETHERSCAN_SCROLL_SEPOLIA,
+      linea: process.env.ETHERSCAN_LINEA_GOERLI
     },
     customChains: [
       {
@@ -47,6 +54,14 @@ module.exports = {
         urls: {
           apiURL: "https://api-sepolia.scrollscan.dev/api",
           browserURL: "https://sepolia.scrollscan.dev/"
+        }
+      },
+      {
+        network: "linea",
+        chainId: 59140,
+        urls: {
+          apiURL: "https://api-testnet.lineascan.build/api",
+          browserURL: "https://goerli.lineascan.build/"
         }
       }
     ]
