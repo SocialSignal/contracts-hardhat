@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.19;
 
-import "./Tribe.sol";  // Replace with your actual import if located differently
-import "@openzeppelin/contracts/proxy/Clones.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "./Tribe.sol"; // Replace with your actual import if located differently
 
 /// @title Tribe Factory
 /// @dev Deploys new instances of the Tribe contract.
@@ -13,28 +11,19 @@ contract TribeFactory {
     event TribeFounded(address indexed tribeAddress);
     address public implementationAddress;
 
-    /// @notice Creates a new Tribe
-    /// @param owner The owner of the Tribe
-    /// @param nftImageURI The base URI for the NFTs in the Tribe
-    /// @param ensName The ENS name for the Tribe
-    /// @return tribeAddress The address of the new Tribe
+
     function createTribe(
-        address owner, 
-        string memory nftImageURI, 
-        string memory ensName
+        address owner,
+        string memory baseURI,
+        string memory ensName,
+        string memory tribeName,
+        string memory tribeSymbol
     ) public returns (address tribeAddress) {
         // Deploy a new Tribe contract and transfer ownership to the specified owner
-        Tribe tribe = Tribe(Clones.clone(implementationAddress));
-        tribe.initialize(owner, nftImageURI, ensName);
-
+        Tribe tribe = new Tribe(owner, baseURI, ensName, tribeName, tribeSymbol);
         // Emit an event for frontend tracking
         emit TribeFounded(address(tribe));
-        
-        return tribeAddress;
-    }
 
-    function initialize(address implementationAddress_) public { 
-        require(implementationAddress == address(0), "contract already initialized");
-        implementationAddress = implementationAddress_;
+        return tribeAddress;
     }
 }
