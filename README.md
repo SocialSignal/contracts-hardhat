@@ -21,8 +21,6 @@ The constructor accepts five parameters:
 ## Methods
 - accept(address member): Accepts a member, either by the member themselves or the owner.
 - revoke(address member): Revokes a membership, either by the member themselves or the owner.
-- isMember(address member): Checks if a given address is a member.
-- setBaseURI(string memory nftImageURI): Updates the base URI (only callable by owner).
 
 ## Events
 - TribeMemberValue(address indexed member, bool value): Emitted when a member's acceptance status changes.

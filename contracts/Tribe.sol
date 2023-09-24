@@ -3,6 +3,7 @@ pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "hardhat/console.sol";
 
 /// @title Tribe Membership Contract
 /// @dev A smart contract that mints ERC721 tokens as proof of membership within a tribe.
@@ -45,15 +46,13 @@ contract Tribe is ERC721, Ownable {
     }
 
     /// @dev Initializes the contract
-    constructor(
-        string memory name, 
-        string memory symbol, 
-        address owner, 
-        string memory nftImageURI, 
-        string memory ensName_
-    ) ERC721(name, symbol) {
+    constructor() ERC721("Tribe", "TRIBE") {}
+
+    function initialize(address owner, string memory nftImageURI, string memory ensName_) onlyOwner() public {
         transferOwnership(owner);
+
         _nftImageURI = nftImageURI;
+
         require(bytes(ensName_).length > 0, "ENS name cannot be empty");
         ensName = ensName_;
     }
@@ -126,14 +125,14 @@ contract Tribe is ERC721, Ownable {
     /// @notice Revoke a membership from the tribe
     /// @param member The address of the current member
     function revoke(address member) public onlyOwnerOrSender(member) {
+        if (isMember(member)) {
+            _exit(member);
+        }
         if (msg.sender == member) {
             _memberValue(member, false);
         }
         if (msg.sender == owner()) {
             _ownerValue(member, false);
-        }
-        if (isMember(member)) {
-            _exit(member);
         }
     }
 
@@ -144,9 +143,10 @@ contract Tribe is ERC721, Ownable {
         return balanceOf(member) > 0;
     }
 
-    /// @notice Sets the base URI for the NFT images
-    /// @param nftImageURI The new base URI
-    function setBaseURI(string memory nftImageURI) external onlyOwner {
-        _nftImageURI = nftImageURI;
-    } 
+    /// @notice Returns the metadata for a token Id - all token IDs should be the same
+    /// @param tokenId The tokenId to check
+    /// @return string related to where the metadata is stored
+    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
+        return _baseURI();
+    }
 }
