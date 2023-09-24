@@ -15,7 +15,7 @@ async function main() {
     `TribeFactory deployed to ${tribeFactory.target}`
   );
 
-  const tribe = await hre.ethers.deployContract("Tribe", [tribeFactory.target]);
+  const tribe = await hre.ethers.deployContract("Tribe");
 
   await tribe.waitForDeployment();
 
