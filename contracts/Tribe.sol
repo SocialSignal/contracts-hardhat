@@ -2,11 +2,10 @@
 pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 
 /// @title Tribe Membership Contract
 /// @dev A smart contract that mints ERC721 tokens as proof of membership within a tribe.
-contract Tribe is ERC721, Ownable {
+contract Tribe is ERC721 {
     enum MemberState { NonMember, Invited, Requested, Member }
 
     mapping(address => bool) public memberAccepted;  /// Tracks the acceptance status by the member
@@ -15,6 +14,7 @@ contract Tribe is ERC721, Ownable {
     uint256 public tokenCounter = 1;  /// Keeps track of the last minted token ID. Set to 1 to enable token Id = 0, which means not minted.
     string private _nftImageURI;  /// The base URI for all minted NFTs
     string public ensName;  /// The ENS name associated with the contract
+    address public owner;  /// The owner of the contract
 
     /// @notice Event emitted when a member's acceptance status changes
     /// @param account The address of the member
@@ -44,29 +44,42 @@ contract Tribe is ERC721, Ownable {
 
     /// @dev Only allows the owner or the sender themselves to perform certain actions
     modifier onlyOwnerOrSender(address account) {
-        require(msg.sender == account || msg.sender == owner(), "msg.sender needs to be equal to member or owner");
+        require(msg.sender == account || msg.sender == owner, "msg.sender needs to be equal to member or owner");
         _;
     }
 
     /// @dev Initializes the contract
-    constructor(address owner) ERC721("Tribe", "TRIBE") {
-        transferOwnership(owner);
-    }
+    constructor() ERC721("Tribe", "TRIBE") {}
 
-    function initialize(address owner, string memory nftImageURI, string memory ensName_) onlyOwner() public {
-        transferOwnership(owner);
+    function initialize(address owner_, string memory nftImageURI, string memory ensName_) public {
+        require(owner == address(0), "contract already initialized");
         setBaseURI(nftImageURI);
         setENSName(ensName_);
+        transferOwnership(owner_);
     }
 
-    function setENSName(string memory ensName_) onlyOwner() public {
+    function setENSName(string memory ensName_) public {
+        if (owner != address(0)) {
+            require(owner == msg.sender, "Only owner can set ENS name");
+        }
         require(bytes(ensName_).length > 0, "ENS name cannot be empty");
         ensName = ensName_;
     }
 
-    function setBaseURI(string memory nftImageURI) onlyOwner() public {
+    function setBaseURI(string memory nftImageURI) public {
+        if (owner != address(0)) {
+            require(owner == msg.sender, "Only owner can set base URI");
+        }
         require(bytes(nftImageURI).length > 0, "NFT image URI cannot be empty");
         _nftImageURI = nftImageURI;
+    }
+
+    function transferOwnership(address newOwner) public {
+        if (owner != address(0)) {
+            require(owner == msg.sender, "Only owner can transfer ownership");
+        }
+        require(newOwner != address(0), "New owner cannot be empty");
+        owner = newOwner;
     }
 
     /// @dev Overrides the `_transfer` function of the ERC721 standard
@@ -141,7 +154,7 @@ contract Tribe is ERC721, Ownable {
         if (msg.sender == account) {
             _memberValue(account, true);
         }
-        if (msg.sender == owner()) {
+        if (msg.sender == owner) {
             _ownerValue(account, true);
         }
         if (_isMintable(account)) {
@@ -159,7 +172,7 @@ contract Tribe is ERC721, Ownable {
         if (msg.sender == account) {
             _memberValue(account, false);
         }
-        if (msg.sender == owner()) {
+        if (msg.sender == owner) {
             _ownerValue(account, false);
         }
         emit TribeStatus(account, getMemberState(account));
