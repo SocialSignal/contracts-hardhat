@@ -63,7 +63,7 @@ module.exports = {
         mnemonic: process.env.MNEMONIC
       },  
     },
-    gnosis: {
+    xdai: {
       url: "https://rpc.gnosischain.com",
       accounts: {
         mnemonic: process.env.MNEMONIC
@@ -77,7 +77,7 @@ module.exports = {
       linea: process.env.ETHERSCAN_LINEA_GOERLI,
       celo: process.env.ETHERSCAN_CELO_ALFAJORES,
       neonevm: "test",
-      gnosis: process.env.ETHERSCAN_GNOSIS
+      xdai: process.env.ETHERSCAN_GNOSIS
     },
     customChains: [
       {
