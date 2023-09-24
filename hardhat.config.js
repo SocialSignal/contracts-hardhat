@@ -45,6 +45,17 @@ module.exports = {
       accounts: {
         mnemonic: process.env.MNEMONIC
       },  
+    },
+    neonevm: {
+      url: `https://proxy.devnet.neonlabs.org/solana`,
+      chainId: 245022926,
+      allowUnlimitedContractSize: false,
+      gas: "auto",
+      gasPrice: "auto",
+      isFork: true,
+      accounts: {
+        mnemonic: process.env.MNEMONIC
+      },  
     }
   },
   etherscan: {
@@ -53,6 +64,7 @@ module.exports = {
       scroll: process.env.ETHERSCAN_SCROLL_SEPOLIA,
       linea: process.env.ETHERSCAN_LINEA_GOERLI,
       celo: process.env.ETHERSCAN_CELO_ALFAJORES,
+      neonevm: "test",
     },
     customChains: [
       {
@@ -79,6 +91,14 @@ module.exports = {
           browserURL: "https://alfajores.celoscan.io/"
         }
       },
+      {
+      network: "neonevm",
+      chainId: 245022926,
+      urls: {
+        apiURL: "https://devnet-api.neonscan.org/hardhat/verify",
+        browserURL: "https://devnet.neonscan.org"
+      }
+    }
     ]
   },
 };
