@@ -1,8 +1,3 @@
-const {
-  time,
-  loadFixture,
-} = require("@nomicfoundation/hardhat-toolbox/network-helpers");
-const { anyValue } = require("@nomicfoundation/hardhat-chai-matchers/withArgs");
 const { expect } = require("chai");
 
 describe("Tribe", function () {
@@ -14,7 +9,7 @@ describe("Tribe", function () {
     const [owner, otherAccount] = await ethers.getSigners();
 
     const Tribe = await ethers.getContractFactory("Tribe");
-    const tribe = await Tribe.deploy();
+    const tribe = await Tribe.deploy()
     await tribe.initialize(owner.address, "https://example.com/", "socialsignal");
 
     return { tribe, owner, otherAccount };
