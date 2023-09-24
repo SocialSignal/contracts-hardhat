@@ -62,6 +62,12 @@ module.exports = {
       accounts: {
         mnemonic: process.env.MNEMONIC
       },  
+    },
+    gnosis: {
+      url: "https://rpc.gnosischain.com",
+      accounts: {
+        mnemonic: process.env.MNEMONIC
+      },  
     }
   },
   etherscan: {
@@ -71,6 +77,7 @@ module.exports = {
       linea: process.env.ETHERSCAN_LINEA_GOERLI,
       celo: process.env.ETHERSCAN_CELO_ALFAJORES,
       neonevm: "test",
+      gnosis: process.env.ETHERSCAN_GNOSIS
     },
     customChains: [
       {
@@ -106,11 +113,11 @@ module.exports = {
         }
       },
       {
-      network: "neonevm",
-      chainId: 245022926,
-      urls: {
-        apiURL: "https://devnet-api.neonscan.org/hardhat/verify",
-        browserURL: "https://devnet.neonscan.org"
+        network: "neonevm",
+        chainId: 245022926,
+        urls: {
+          apiURL: "https://devnet-api.neonscan.org/hardhat/verify",
+          browserURL: "https://devnet.neonscan.org"
       },
     }
     ]
