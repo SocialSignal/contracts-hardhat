@@ -39,13 +39,20 @@ module.exports = {
       accounts: {
         mnemonic: process.env.MNEMONIC
       },  
+    },
+    celo: {
+      url: `https://celo-alfajores.infura.io/v3/${process.env.INFURA_KEY}`,
+      accounts: {
+        mnemonic: process.env.MNEMONIC
+      },  
     }
   },
   etherscan: {
     apiKey: {
       goerli: process.env.ETHERSCAN_GOERLI,
       scroll: process.env.ETHERSCAN_SCROLL_SEPOLIA,
-      linea: process.env.ETHERSCAN_LINEA_GOERLI
+      linea: process.env.ETHERSCAN_LINEA_GOERLI,
+      celo: process.env.ETHERSCAN_CELO_ALFAJORES,
     },
     customChains: [
       {
@@ -63,7 +70,15 @@ module.exports = {
           apiURL: "https://api-testnet.lineascan.build/api",
           browserURL: "https://goerli.lineascan.build/"
         }
-      }
+      },
+      {
+        network: "celo",
+        chainId: 44787,
+        urls: {
+          apiURL: "https://api-alfajores.celoscan.io/api",
+          browserURL: "https://alfajores.celoscan.io/"
+        }
+      },
     ]
   },
 };
