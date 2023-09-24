@@ -27,3 +27,11 @@ The constructor accepts five parameters:
 - TribeOwnerValue(address indexed member, bool value): Emitted when an owner's acceptance status for a member changes.
 - TribeJoined(address indexed member, uint256 tokenId): Emitted when a new member joins.
 - TribeExited(address indexed member, uint256 tokenId): Emitted when a member exits.
+
+## Deployed Contracts
+- Goerli: [0x50a28a0d610733d261fce2e315c8a58e30b0a9ac](https://goerli.etherscan.io/address/0x50a28a0d610733d261fce2e315c8a58e30b0a9ac#code)
+- Scroll: [0x843C1Cf1DAfB56857b698DB3fA84C1f63bf89EA6](https://sepolia.scrollscan.dev/address/0x843C1Cf1DAfB56857b698DB3fA84C1f63bf89EA6#code)
+- Linea: [0x843C1Cf1DAfB56857b698DB3fA84C1f63bf89EA6](https://goerli.lineascan.build/address/0x843C1Cf1DAfB56857b698DB3fA84C1f63bf89EA6#code)
+- Celo: [0x843C1Cf1DAfB56857b698DB3fA84C1f63bf89EA6](https://alfajores.celoscan.io/address/0x843C1Cf1DAfB56857b698DB3fA84C1f63bf89EA6#code)
+- Base: [0x039cf813f8F1E4A1Ab4F8896c9D8FD1f3E420733](https://goerli.basescan.org/address/0x039cf813f8F1E4A1Ab4F8896c9D8FD1f3E420733#code)
+- Gnosis: [0x843C1Cf1DAfB56857b698DB3fA84C1f63bf89EA6](https://gnosisscan.io/address/0x843C1Cf1DAfB56857b698DB3fA84C1f63bf89EA6#code) (waiting for block explorer to sync)
