@@ -56,6 +56,12 @@ module.exports = {
       accounts: {
         mnemonic: process.env.MNEMONIC
       },  
+    },
+    mantle: {
+      url: `https://rpc.testnet.mantle.xyz`,
+      accounts: {
+        mnemonic: process.env.MNEMONIC
+      },  
     }
   },
   etherscan: {
@@ -67,6 +73,14 @@ module.exports = {
       neonevm: "test",
     },
     customChains: [
+      {
+        network: "mantle",
+        chainId: 5001,
+        urls: {
+          apiURL: "https://testnet.api.mantlescan.org/api",
+          browserURL: "https://testnet.mantlescan.org/"
+        },
+      },
       {
         network: "scroll",
         chainId: 534351,
@@ -97,7 +111,7 @@ module.exports = {
       urls: {
         apiURL: "https://devnet-api.neonscan.org/hardhat/verify",
         browserURL: "https://devnet.neonscan.org"
-      }
+      },
     }
     ]
   },
