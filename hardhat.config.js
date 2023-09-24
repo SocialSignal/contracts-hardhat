@@ -68,6 +68,13 @@ module.exports = {
       accounts: {
         mnemonic: process.env.MNEMONIC
       },  
+    },
+    baseGoerli: {
+      url: `https://special-polished-glitter.base-goerli.quiknode.pro/${process.env.QUICKNODE_BASE}/`,
+      accounts: {
+        mnemonic: process.env.MNEMONIC
+      },  
+      gasPrice: 30*gwei
     }
   },
   etherscan: {
@@ -77,7 +84,8 @@ module.exports = {
       linea: process.env.ETHERSCAN_LINEA_GOERLI,
       celo: process.env.ETHERSCAN_CELO_ALFAJORES,
       neonevm: "test",
-      xdai: process.env.ETHERSCAN_GNOSIS
+      xdai: process.env.ETHERSCAN_GNOSIS,
+      baseGoerli: process.env.ETHERSCAN_BASE
     },
     customChains: [
       {
