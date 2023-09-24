@@ -15,7 +15,7 @@ async function main() {
     `TribeFactory deployed to ${tribeFactory.target}`
   );
 
-  const tribe = await hre.ethers.deployContract("Tribe", [factory.address]);
+  const tribe = await hre.ethers.deployContract("Tribe", [tribeFactory.target]);
 
   await tribe.waitForDeployment();
 
@@ -25,9 +25,9 @@ async function main() {
     `Tribe deployed to ${tribeAddress}`
   );
 
-  await tribeFactory.setImplementation(tribe.target);
+  await tribeFactory.initialize(tribe.target);
 
-  console.log("Tribe ownership transferred to TribeFactory");
+  console.log("TribeFactory initialized with tribe address");
 
   // Time sleep for 30 
   await new Promise(r => setTimeout(r, 30000));

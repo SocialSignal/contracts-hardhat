@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 /// @title Tribe Factory
 /// @dev Deploys new instances of the Tribe contract.
-contract TribeFactory is Ownable {
+contract TribeFactory {
     /// @notice Event emitted when a new Tribe is created
     /// @param tribeAddress The address of the Tribe contract
     event TribeFounded(address indexed tribeAddress);
