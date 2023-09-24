@@ -27,9 +27,28 @@ module.exports = {
       accounts: {
         mnemonic: process.env.MNEMONIC
       },
+    },
+    scroll: {
+      url: `https://bold-evocative-arrow.scroll-testnet.quiknode.pro/${process.env.QUICKNODE_KEY}`,
+      accounts: {
+        mnemonic: process.env.MNEMONIC
+      },
     }
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN
+    apiKey: {
+      goerli: process.env.ETHERSCAN_GOERLI,
+      scroll: process.env.ETHERSCAN_SCROLL_SEPOLIA,
+    },
+    customChains: [
+      {
+        network: "scroll",
+        chainId: 534351,
+        urls: {
+          apiURL: "https://api-sepolia.scrollscan.dev/api",
+          browserURL: "https://sepolia.scrollscan.dev/"
+        }
+      }
+    ]
   },
 };
