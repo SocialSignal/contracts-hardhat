@@ -7,7 +7,17 @@
 const hre = require("hardhat");
 
 async function main() {
-  const tribeFactory = await hre.ethers.deployContract("TribeFactory");
+  const tribe = await hre.ethers.deployContract("Tribe");
+
+  await tribe.waitForDeployment();
+
+  const tribeAddress = tribe.target;
+
+  console.log(
+    `Tribe deployed to ${tribeAddress}`
+  );
+
+  const tribeFactory = await hre.ethers.deployContract("TribeFactory", [tribeAddress]);
 
   await tribeFactory.waitForDeployment();
 
@@ -15,11 +25,20 @@ async function main() {
     `TribeFactory deployed to ${tribeFactory.target}`
   );
 
+  await tribe.transferOwnership(tribeFactory.target);
+
+  console.log("Tribe ownership transferred to TribeFactory");
+
   // Time sleep for 30 
   await new Promise(r => setTimeout(r, 30000));
 
   await hre.run("verify:verify", {
+    address: tribe.target,
+  });
+
+  await hre.run("verify:verify", {
     address: tribeFactory.target,
+    constructorArguments: [tribe.address],
   });
 }
 

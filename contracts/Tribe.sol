@@ -50,11 +50,18 @@ contract Tribe is ERC721, Ownable {
 
     function initialize(address owner, string memory nftImageURI, string memory ensName_) onlyOwner() public {
         transferOwnership(owner);
+        setBaseURI(nftImageURI);
+        setENSName(ensName_);
+    }
 
-        _nftImageURI = nftImageURI;
-
+    function setENSName(string memory ensName_) onlyOwner() public {
         require(bytes(ensName_).length > 0, "ENS name cannot be empty");
         ensName = ensName_;
+    }
+
+    function setBaseURI(string memory nftImageURI) onlyOwner() public {
+        require(bytes(nftImageURI).length > 0, "NFT image URI cannot be empty");
+        _nftImageURI = nftImageURI;
     }
 
     /// @dev Overrides the `_transfer` function of the ERC721 standard
